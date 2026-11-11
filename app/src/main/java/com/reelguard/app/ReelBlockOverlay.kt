@@ -1,7 +1,6 @@
 package com.reelguard.app
 
 import android.accessibilityservice.AccessibilityService
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Typeface
@@ -13,96 +12,93 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.util.TypedValue
 
-/**
- * Draws a touch-blocking panel directly over Instagram using the accessibility
- * service's own overlay window. No "draw over other apps" permission is needed.
- */
+/** Full-window, touch-consuming blocker rendered by the AccessibilityService. */
 class ReelBlockOverlay(private val service: AccessibilityService) {
-    private val windowManager =
-        service.getSystemService(AccessibilityService.WINDOW_SERVICE) as WindowManager
-
+    private val windowManager = service.getSystemService(AccessibilityService.WINDOW_SERVICE) as WindowManager
     private var rootView: View? = null
 
-    val isShowing: Boolean
-        get() = rootView != null
-
-    fun show(onBack: () -> Unit) {
+    fun show(platform: String, onBack: () -> Unit) {
         if (rootView != null) return
-
         val density = service.resources.displayMetrics.density
         fun dp(value: Int) = (value * density).toInt()
+        fun shape(color: Int, radius: Int) = GradientDrawable().apply {
+            setColor(color)
+            cornerRadius = dp(radius).toFloat()
+        }
 
+        val platformName = if (platform == "instagram") "Instagram Reels" else "YouTube Shorts"
         val root = FrameLayout(service).apply {
-            setBackgroundColor(Color.argb(218, 10, 12, 15))
+            setBackgroundColor(Color.rgb(13, 13, 13))
             isClickable = true
-            isFocusable = false
+            isFocusable = true
             contentDescription = "ReelGuard blocking screen"
         }
 
         val card = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(24), dp(28), dp(24), dp(24))
-            background = GradientDrawable().apply {
-                setColor(Color.rgb(247, 248, 244))
-                cornerRadius = dp(22).toFloat()
-            }
-            elevation = dp(12).toFloat()
+            setPadding(dp(26), dp(30), dp(26), dp(26))
+            background = shape(Color.rgb(25, 25, 27), 30)
+            elevation = dp(14).toFloat()
         }
 
         card.addView(TextView(service).apply {
-            text = "REEL BLOCKED"
-            setTextColor(Color.rgb(30, 32, 29))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 23f)
-            typeface = Typeface.DEFAULT_BOLD
+            text = "✳"
+            setTextColor(Color.rgb(167, 139, 250))
+            textSize = 38f
             gravity = Gravity.CENTER
-        }, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ))
+            typeface = Typeface.DEFAULT_BOLD
+        }, LinearLayout.LayoutParams(-1, -2))
 
         card.addView(TextView(service).apply {
-            text = "You came here for a moment. Don't let one Reel turn into an endless scroll."
-            setTextColor(Color.rgb(86, 90, 82))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            text = "Not this time."
+            setTextColor(Color.rgb(246, 246, 246))
+            textSize = 29f
             gravity = Gravity.CENTER
-            setLineSpacing(dp(3).toFloat(), 1f)
-        }, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            topMargin = dp(14)
-            bottomMargin = dp(22)
-        })
+            typeface = Typeface.create("sans-serif-rounded", Typeface.BOLD)
+            setPadding(0, dp(12), 0, 0)
+        }, LinearLayout.LayoutParams(-1, -2))
+
+        card.addView(TextView(service).apply {
+            text = "$platformName is paused. You opened it for a moment — don't let that moment become an endless scroll."
+            setTextColor(Color.rgb(168, 168, 176))
+            textSize = 15f
+            gravity = Gravity.CENTER
+            setLineSpacing(dp(4).toFloat(), 1f)
+            setPadding(0, dp(12), 0, dp(22))
+        }, LinearLayout.LayoutParams(-1, -2))
 
         card.addView(Button(service).apply {
-            text = "Back to Instagram"
+            text = "Back to my day"
             isAllCaps = false
+            textSize = 15f
+            typeface = Typeface.DEFAULT_BOLD
             setTextColor(Color.WHITE)
-            backgroundTintList = ColorStateList.valueOf(Color.rgb(37, 88, 64))
+            background = shape(Color.rgb(124, 58, 237), 18)
             setOnClickListener { onBack() }
-        }, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            dp(52)
-        ))
+        }, LinearLayout.LayoutParams(-1, dp(54)))
 
-        root.addView(card, FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            Gravity.CENTER
-        ).apply {
-            leftMargin = dp(26)
-            rightMargin = dp(26)
+        card.addView(TextView(service).apply {
+            text = "YOUR FOCUS IS WORTH PROTECTING"
+            setTextColor(Color.rgb(125, 125, 135))
+            textSize = 10f
+            gravity = Gravity.CENTER
+            letterSpacing = 0.11f
+            setPadding(0, dp(18), 0, 0)
+        }, LinearLayout.LayoutParams(-1, -2))
+
+        root.addView(card, FrameLayout.LayoutParams(-1, -2, Gravity.CENTER).apply {
+            leftMargin = dp(24)
+            rightMargin = dp(24)
         })
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START

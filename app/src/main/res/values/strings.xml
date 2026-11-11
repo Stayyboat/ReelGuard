@@ -1,1 +1,4 @@
-<resources><string name="app_name">ReelGuard</string></resources>
+<resources>
+    <string name="app_name">ReelGuard</string>
+    <string name="accessibility_description">Detects the dedicated Instagram Reels and YouTube Shorts viewers on this device so ReelGuard can cover them. It does not read messages or capture screen contents.</string>
+</resources>
