@@ -47,8 +47,8 @@ class MainActivity : Activity() {
     private fun refreshStatus() {
         val active = ReelGuardAccessibilityService.isEnabled(this)
         statusTitle.text = if (active) "Protection is on" else "Protection is off"
-        statusDetail.text = if (active) "ReelGuard is watching for the Instagram Reels tab."
-            else "Turn on ReelGuard in Android Accessibility settings to block the Reels tab."
+        statusDetail.text = if (active) "ReelGuard is watching Instagram for the full-screen Reels viewer."
+            else "Turn on ReelGuard in Android Accessibility settings to detect and cover the Reels viewer."
         statusDot.setBackgroundResource(if (active) R.drawable.bg_status_dot_on else R.drawable.bg_status_dot_off)
         enableButton.text = if (active) "Accessibility settings" else "Enable protection"
         val count = getSharedPreferences(ReelGuardAccessibilityService.PREFS_NAME, MODE_PRIVATE)
@@ -75,7 +75,7 @@ class MainActivity : Activity() {
 
     private fun showPreview() {
         AlertDialog.Builder(this).setTitle("Not this time.")
-            .setMessage("The Reels tab is blocked. Your messages and shared links stay available.\n\nThis is a preview of the block screen.")
+            .setMessage("The full-screen Reels viewer is covered by a blocking panel.\n\nThis is a preview of the block screen.")
             .setPositiveButton("Got it", null).show()
     }
 }
