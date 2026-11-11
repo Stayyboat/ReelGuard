@@ -68,6 +68,7 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(22), dp(20), dp(22), dp(36))
         }
+        // ScrollView inherits FrameLayout; use its public layout params type.
         scroll.addView(content, android.widget.FrameLayout.LayoutParams(-1, -2))
 
         content.addView(label("YOUR DIGITAL WELLBEING", 11, muted, true).apply {
