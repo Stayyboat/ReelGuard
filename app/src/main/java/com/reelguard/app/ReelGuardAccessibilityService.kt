@@ -17,6 +17,8 @@ class ReelGuardAccessibilityService : AccessibilityService() {
         const val INSTAGRAM_PACKAGE = "com.instagram.android"
         const val PREFS_NAME = "reelguard_prefs"
         const val BLOCKED_COUNT_KEY = "blocked_count"
+        private const val MAX_TREE_DEPTH = 70
+        private const val WATCHDOG_INTERVAL_MS = 650L
 
         // Instagram's internal IDs can change between releases. Keep the list centralized.
         private val REEL_VIEW_ID_MARKERS = listOf(
@@ -139,8 +141,4 @@ class ReelGuardAccessibilityService : AccessibilityService() {
         super.onDestroy()
     }
 
-    private companion object {
-        const val MAX_TREE_DEPTH = 70
-        const val WATCHDOG_INTERVAL_MS = 650L
-    }
 }
