@@ -68,7 +68,7 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(22), dp(20), dp(22), dp(36))
         }
-        scroll.addView(content, ScrollView.LayoutParams(-1, -2))
+        scroll.addView(content, android.widget.FrameLayout.LayoutParams(-1, -2))
 
         content.addView(label("YOUR DIGITAL WELLBEING", 11, muted, true).apply {
             letterSpacing = 1.4f
