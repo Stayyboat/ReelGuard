@@ -338,3 +338,5 @@ class MainActivity : Activity() {
 
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 }
+
+// Build trigger: compile the corrected ScrollView layout parameters.
